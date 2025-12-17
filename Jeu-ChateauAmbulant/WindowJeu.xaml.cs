@@ -1,320 +1,285 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using static System.Net.Mime.MediaTypeNames;
-
+using System.Threading.Tasks;
 
 namespace Jeu_ChateauAmbulant
 {
-	/// <summary>
-	/// Logique d'interaction pour UCJeu.xaml
-	/// </summary>
-	public partial class WindowJeu : Window
-	{
-		private TimeSpan tempsTrajetTotal = TimeSpan.FromMinutes(1);
-		private TimeSpan tempsMaxAutorise = TimeSpan.FromMinutes(1.15); 
-		private static int pasFond = 10;
-		private int nb = 0;
-		private BitmapImage[] chateaux = new BitmapImage[9];
-		public static DispatcherTimer minuterie { get; set; } = new DispatcherTimer();
-		public static DispatcherTimer minuterieEnemi { get; set; } = new DispatcherTimer();
-		Stopwatch chronoFeu = new Stopwatch();
-		Stopwatch chronoJeu = new Stopwatch();
-		private bool corbeauEnVol = false;
-		private int delaifeu = 10;
-		private const int PAS_CORBEAU = 18;
+    /// <summary>
+    /// Logique principale du jeu gérant le mouvement, les ennemis et les conditions de victoire.
+    /// </summary>
+    public partial class WindowJeu : Window
+    {
+        // --- Paramètres de temps et progression ---
+        private TimeSpan tempsTrajetTotal = TimeSpan.FromMinutes(1);      // Temps nécessaire pour atteindre l'arrivée
+        private TimeSpan tempsMaxAutorise = TimeSpan.FromMinutes(1.15);   // Limite de temps absolue avant défaite
+        private static int pasFond = 10;                                  // Vitesse de défilement du décor
+        private int nb = 0;                                               // Compteur pour l'indexation de l'animation
+        private BitmapImage[] chateaux = new BitmapImage[9];              // Tableau stockant les frames de l'animation du château
+
+        // --- Timers et chronomètres ---
+        public static DispatcherTimer minuterie { get; set; } = new DispatcherTimer();      // Timer principal (décor/château)
+        public static DispatcherTimer minuterieEnemi { get; set; } = new DispatcherTimer(); // Timer dédié aux ennemis
+        public static DispatcherTimer minuterieTimer { get; set; } = new DispatcherTimer(); // Timer de mise à jour de l'affichage
+
+        Stopwatch chronoFeu = new Stopwatch();   // Gère le rythme de consommation du bois
+        Stopwatch chronoJeu = new Stopwatch();   // Mesure la progression réelle vers l'arrivée
+        Stopwatch chronoTotal = new Stopwatch(); // Mesure le temps global écoulé depuis le début
+
+        // --- États du jeu et ennemis ---
+        private bool corbeauEnVol = false;
+        private int delaifeu = 10;               // Intervalle de temps avant de perdre une bûche (selon niveau)
+        private const int PAS_CORBEAU = 18;      // Vitesse horizontale du corbeau
         private bool avionEnVol = false;
-        private const int PAS_AVION = 18;
+        private const int PAS_AVION = 18;        // Vitesse horizontale de l'avion
         private bool bombeEnVol = false;
-        private const int PAS_BOMBE = 9;
-        public int alimentation_feu = 1;
-        private bool casse = false;
-		public static bool chateauDetruit { get; set; } = false ;
-        public static int niveau { get; set; }
-		public static bool bouclierActif { get; set; } = false;
-        public static DispatcherTimer minuterieTimer { get; set; } = new DispatcherTimer();
-        Stopwatch chronoTotal = new Stopwatch();
+        private const int PAS_BOMBE = 9;         // Vitesse de chute de la bombe
+
+        private bool casse = false;              // Indique si le château est immobilisé (froid/surchauffe)
+        public static bool chateauDetruit { get; set; } = false;
+        public static int niveau { get; set; }   // Niveau de difficulté sélectionné
+        public static bool bouclierActif { get; set; } = false; // État de protection contre les ennemis
 
         public WindowJeu()
-		{
-			InitializeComponent();
-			InitializeTimer();
-			InitializeImages();
-			this.Closed += WindowJeu_Closed;
+        {
+            InitializeComponent();
+            InitializeTimer();
+            InitializeImages();
+            this.Closed += WindowJeu_Closed;
 
-            if(niveau == 1)
+            // Configuration de la difficulté en fonction du niveau
+            if (niveau == 1)
             { delaifeu = 10; tempsMaxAutorise = TimeSpan.FromMinutes(1.25); }
             else if (niveau == 2)
-                {delaifeu = 7; tempsMaxAutorise = TimeSpan.FromMinutes(1.15); }
-            else if(niveau == 3)
-			    {delaifeu = 5; tempsMaxAutorise = TimeSpan.FromMinutes(1.05); }
+            { delaifeu = 7; tempsMaxAutorise = TimeSpan.FromMinutes(1.15); }
+            else if (niveau == 3)
+            { delaifeu = 5; tempsMaxAutorise = TimeSpan.FromMinutes(1.05); }
+        }
 
-		}
-		private void WindowJeu_Closed(object sender, EventArgs e)
-		{
-			Arreter();
-		}
+        // Nettoyage automatique des ressources à la fermeture de la fenêtre
+        private void WindowJeu_Closed(object sender, EventArgs e) => Arreter();
 
-		private void InitializeTimer()
-		{
-			minuterie = new DispatcherTimer();
-			minuterieEnemi = new DispatcherTimer();
+        /// <summary>
+        /// Initialise tous les timers du jeu.
+        /// </summary>
+        private void InitializeTimer()
+        {
+            minuterie.Interval = TimeSpan.FromMilliseconds(16);      // Env. 60 FPS
+            minuterieEnemi.Interval = TimeSpan.FromMilliseconds(16);
+            minuterieTimer.Interval = TimeSpan.FromMilliseconds(100);
 
-			minuterie.Interval = TimeSpan.FromMilliseconds(16);
-			minuterieEnemi.Interval = TimeSpan.FromMilliseconds(16);
-			minuterie.Start();
-			minuterieEnemi.Start();
-
-			minuterie.Tick += Jeu;
-
-			minuterieEnemi.Tick += Corbeau;
+            minuterie.Tick += Jeu;
+            minuterieEnemi.Tick += Corbeau;
             minuterieEnemi.Tick += Avion;
+            minuterieTimer.Tick += MAJTimer;
 
             minuterie.Start();
-			minuterieEnemi.Start();
-
-            minuterieTimer.Interval = TimeSpan.FromMilliseconds(100);
-            minuterieTimer.Tick += MAJTimer; 
+            minuterieEnemi.Start();
             minuterieTimer.Start();
             chronoTotal.Start();
         }
 
-		private void MAJTimer(object? sender, EventArgs e)
-		{
-			TimeSpan ecoule = chronoJeu.Elapsed;
+        /// <summary>
+        /// Met à jour le label du chronomètre et vérifie les conditions de fin de partie.
+        /// </summary>
+        private void MAJTimer(object? sender, EventArgs e)
+        {
+            TimeSpan ecoule = chronoJeu.Elapsed;
+            double restantPourGagner = Math.Max(0, (tempsTrajetTotal - ecoule).TotalSeconds);
+            double tempsLimiteVie = Math.Max(0, (tempsMaxAutorise - chronoTotal.Elapsed).TotalSeconds);
 
-			double restantPourGagner = Math.Max(0, (tempsTrajetTotal - ecoule).TotalSeconds);
-			double tempsLimiteVie = Math.Max(0, (tempsMaxAutorise - chronoTotal.Elapsed).TotalSeconds);
+            label_chrono.Content = $"Arrivée dans : {restantPourGagner:F1}s | Limite critique : {tempsLimiteVie:F1}s";
 
-			label_chrono.Content = $"Arrivée dans : {restantPourGagner:F1}s | Limite critique : {tempsLimiteVie:F1}s";
+            // Victoire : le trajet est terminé sans encombre
+            if (restantPourGagner == 0 && !chateauDetruit && !casse)
+                TerminerPartie(true);
 
-			if (restantPourGagner == 0 && !chateauDetruit && !casse)
-			{
-				TerminerPartie(true);
-			}
+            // Défaite : la limite de temps critique est atteinte
+            if (restantPourGagner >= tempsLimiteVie)
+                TerminerPartie(false);
+        }
 
-			if (restantPourGagner >= tempsLimiteVie)
-			{
-				TerminerPartie(false);
-			}
-		}
-		private void TerminerPartie(bool victoire)
-		{
-			minuterie.Stop();
-			minuterieEnemi.Stop();
-			minuterieTimer.Stop();
-			chronoTotal.Stop();
-			chronoJeu.Stop();
+        /// <summary>
+        /// Affiche l'écran de fin (gagné ou perdu).
+        /// </summary>
+        private void TerminerPartie(bool victoire)
+        {
+            Arreter();
+            label_fin.Visibility = Visibility.Visible;
+            bouton_rejouer.Visibility = Visibility.Visible;
 
-			label_fin.Visibility = Visibility.Visible;
-			bouton_rejouer.Visibility = Visibility.Visible;
+            string imageFin = victoire ? "image_fin_gagne.png" : "image_fin_perd.png";
+            label_fin.Background = new ImageBrush(new BitmapImage(new Uri($"pack://application:,,,/images/{imageFin}")));
+        }
 
-			if (victoire)
-			{
-				label_fin.Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/images/image_fin_gagne.png")));
-			}
-			else
-			{
-				label_fin.Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/images/image_fin_perd.png")));
-			}
-		}
-
+        /// <summary>
+        /// Boucle principale : défilement, animation et gestion du combustible.
+        /// </summary>
         private async void Jeu(object? sender, EventArgs e)
         {
             chronoJeu.Start();
             Deplace(Background1, pasFond);
             Deplace(Background2, pasFond);
-            nb++;
 
-            if (nb == chateaux.Length * 8)
-                nb = 0;
-            if (nb % 8 == 0)
-                chateau1.Source = chateaux[nb / 8];
+            // Gestion de l'animation par changement de source d'image toutes les 8 frames
+            nb++;
+            if (nb == chateaux.Length * 8) nb = 0;
+            if (nb % 8 == 0) chateau1.Source = chateaux[nb / 8];
 
             chronoFeu.Start();
 
+            if (chateauDetruit) Arreter();
 
-            if (chateauDetruit)
-            {
-                minuterie.Stop();
-                chronoJeu.Stop();
-            }
-
+            // Consommation automatique du bois
             if (chronoFeu.Elapsed.TotalSeconds > delaifeu)
             {
-                Window_alimentation.nombre_buches += -1;
+                Window_alimentation.nombre_buches--;
                 chronoFeu.Restart();
                 Window_alimentation.Verif_alimentation();
+
+                // Décompte visuel sur l'interface
                 for (int i = delaifeu; i >= 1; i--)
                 {
                     label_buches.Content = $"{i}s";
                     await Task.Delay(1000);
                 }
-
             }
 
-            if (Window_alimentation.nombre_buches < 1)
+            // --- Vérification des états du feu ---
+            if (Window_alimentation.nombre_buches < 1) // Trop froid
             {
                 casse = true;
-                thermometres.Source = new BitmapImage(new Uri($"pack://application:,,,/images/thermometre_froid.png"));
-                chateau1.Source = new BitmapImage(new Uri($"pack://application:,,,/images/imgChateau_glace.png"));
-                chronoJeu.Stop();
-                minuterie.Stop();
+                thermometres.Source = new BitmapImage(new Uri("pack://application:,,,/images/thermometre_froid.png"));
+                chateau1.Source = new BitmapImage(new Uri("pack://application:,,,/images/imgChateau_glace.png"));
+                ArrêterMouvements();
+
                 label_timer_froid.Visibility = Visibility.Visible;
                 for (int i = 10; i >= 1; i--)
                 {
                     label_timer_froid.Content = $"alimenter avant : {i}s";
                     await Task.Delay(1000);
                 }
-
-                if (Window_alimentation.nombre_buches < 1)
-                {
-                    casse = true;
-                    label_timer_froid.Content = "Loupé !";
-                }
-                else
-                {
-                    label_timer_froid.Visibility = Visibility.Hidden;
-                    label_timer_froid.Content = "";
-                }
-
+                if (Window_alimentation.nombre_buches < 1) label_timer_froid.Content = "Loupé !";
+                else label_timer_froid.Visibility = Visibility.Hidden;
             }
-
-            else if (Window_alimentation.nombre_buches > 5)
+            else if (Window_alimentation.nombre_buches > 5) // Surchauffe
             {
                 casse = true;
-                thermometres.Source = new BitmapImage(new Uri($"pack://application:,,,/images/thermometre_brulant.png"));
-                chateau1.Source = new BitmapImage(new Uri($"pack://application:,,,/images/imgChateau_Enflamme.png"));
+                thermometres.Source = new BitmapImage(new Uri("pack://application:,,,/images/thermometre_brulant.png"));
+                chateau1.Source = new BitmapImage(new Uri("pack://application:,,,/images/imgChateau_Enflamme.png"));
                 bouton_eteindre.Visibility = Visibility.Visible;
-
+                ArrêterMouvements();
             }
-            else
+            else // État normal
             {
-
-                InitializeImages();
                 thermometres.Source = new BitmapImage(new Uri($"pack://application:,,,/images/thermometre_{Window_alimentation.nombre_buches}.png"));
                 casse = false;
             }
+        }
 
+        // Stoppe les chronomètres de progression et le timer principal
+        private void ArrêterMouvements()
+        {
+            chronoJeu.Stop();
+            minuterie.Stop();
+        }
 
-            if (casse)
+        /// <summary>
+        /// IA et mouvement du corbeau.
+        /// </summary>
+        private void Corbeau(object? sender, EventArgs e)
+        {
+            Random randint = new Random();
+            if (!corbeauEnVol && randint.Next(1, 400) == 1)
             {
-                chronoJeu.Stop();
-                minuterie.Stop();
-                return;
+                Canvas.SetRight(img_corbeau, 0);
+                corbeauEnVol = true;
+            }
+
+            if (corbeauEnVol)
+            {
+                Deplace(img_corbeau, PAS_CORBEAU);
+                if (Canvas.GetLeft(img_corbeau) <= 220) // Collision avec le château
+                {
+                    if (!bouclierActif)
+                    {
+                        DetruireChateau();
+                    }
+                    Canvas.SetLeft(img_corbeau, 1900);
+                    bouclierActif = false; // Le bouclier est consommé après une attaque
+                    corbeauEnVol = false;
+                }
             }
         }
 
-		private void Corbeau(object? sender, EventArgs e)
-		{
-            minuterieEnemi.Start();
-			Random randint = new Random();
-			int probaEnemi = randint.Next(1, 400); 
+        // Change l'image du château pour l'état détruit et arrête le jeu
+        private void DetruireChateau()
+        {
+            chateau1.Source = new BitmapImage(new Uri(@"pack://application:,,,/images/maisonCassee.png"));
+            chateauDetruit = true;
+            ArrêterMouvements();
+        }
 
-			if (!corbeauEnVol)
-			{
-				if (probaEnemi == 1)
-				{
-					Canvas.SetRight(img_corbeau, 0); 
-					corbeauEnVol = true;
-				}
-			}
+        /// <summary>
+        /// IA de l'avion et largage de la bombe.
+        /// </summary>
+        private void Avion(object? sender, EventArgs e)
+        {
+            Random randint = new Random();
+            if (!avionEnVol && randint.Next(1, 500) == 1)
+            {
+                Canvas.SetRight(img_avion, 0);
+                avionEnVol = true;
+            }
+            if (avionEnVol)
+            {
+                Deplace(img_avion, PAS_AVION);
+                if (Canvas.GetLeft(img_avion) <= 220 && !bombeEnVol) // Largage
+                {
+                    Canvas.SetLeft(img_bombe, 220);
+                    Canvas.SetBottom(img_bombe, 700);
+                    img_bombe.Visibility = Visibility.Visible;
+                    bombeEnVol = true;
+                }
+                if (Canvas.GetLeft(img_avion) <= 0)
+                {
+                    avionEnVol = false;
+                    Canvas.SetLeft(img_avion, 1900);
+                }
+            }
+            if (bombeEnVol)
+            {
+                DeplaceVertical(img_bombe, PAS_BOMBE);
+                if (Canvas.GetBottom(img_bombe) <= 100) // Impact
+                {
+                    DetruireChateau();
+                    bombeEnVol = false;
+                    Canvas.SetBottom(img_bombe, 800);
+                }
+            }
+        }
 
-			if (corbeauEnVol)
-			{
-				Deplace(img_corbeau, PAS_CORBEAU);
-
-				if (Canvas.GetLeft(img_corbeau) <= 220)
-				{
-                    if (!bouclierActif)
-                    {
-						chateau1.Source = new BitmapImage(new Uri(@"pack://application:,,,/images/maisonCassee.png"));
-						corbeauEnVol = false;						
-						chronoJeu.Stop();
-						minuterie.Stop();
-						chateauDetruit = true;
-					}
-					Canvas.SetLeft(img_corbeau, 1900);
-                    bouclierActif = false;
-                    corbeauEnVol = false;
-				}
-			}
-		}
-		
-		public void Deplace(System.Windows.Controls.Image image, int pas)
+        // --- Méthodes de déplacement d'objets sur le Canvas ---
+        public void Deplace(Image image, int pas)
         {
             Canvas.SetLeft(image, Canvas.GetLeft(image) - pas);
             if (Canvas.GetLeft(image) + image.Width <= 0)
                 Canvas.SetLeft(image, image.Width - pas);
         }
 
-        public void DeplaceVertical(System.Windows.Controls.Image image, int pas)
+        public void DeplaceVertical(Image image, int pas)
         {
-			Canvas.SetBottom(image, Canvas.GetBottom(image) - pas);
-			if (Canvas.GetBottom(image) + image.Height <= 0)
-				Canvas.SetBottom(image, image.Height - pas);
-		}
+            Canvas.SetBottom(image, Canvas.GetBottom(image) - pas);
+            if (Canvas.GetBottom(image) + image.Height <= 0)
+                Canvas.SetBottom(image, image.Height - pas);
+        }
 
-        private void Avion(object? sender, EventArgs e)
-        {
-            minuterieEnemi.Start();
-            Random randint = new Random();
-            int probaEnemi = randint.Next(1, 500);
-            if (!avionEnVol)
-            {
-                if (probaEnemi == 1)
-                {
-                    Canvas.SetRight(img_avion, 0);
-                    avionEnVol = true;
-                }
-            }
-            if (avionEnVol)
-            {
-                Deplace(img_avion, PAS_AVION);
-                if (Canvas.GetLeft(img_avion) <= 220 && !bombeEnVol)
-                {
-					Canvas.SetLeft(img_bombe, 220);
-					Canvas.SetBottom(img_bombe, 700);
-					img_bombe.Visibility = Visibility.Visible;
-					bombeEnVol = true;
-				}
-                if (Canvas.GetLeft(img_avion) <= 0)
-                {
-                    avionEnVol = false;
-					Canvas.SetLeft(img_avion, 1900);
-				}
-            }
-            if (bombeEnVol)
-            {
-                DeplaceVertical(img_bombe, PAS_BOMBE);
-                if (Canvas.GetBottom(img_bombe) <= 100)
-                {
-					
-					chateau1.Source = new BitmapImage(new Uri(@"pack://application:,,,/images/maisonCassee.png"));
-                    bombeEnVol = false;
-                    Canvas.SetBottom(img_bombe, 800);
-                    chateauDetruit = true;
-                    chronoJeu.Stop();
-                    minuterie.Stop();
-                }
-			}
-		}
-		private void InitializeImages()
+        // Initialise les ressources graphiques et masque les éléments d'UI de fin
+        private void InitializeImages()
         {
             for (int i = 0; i < 9; i++)
                 chateaux[i] = new BitmapImage(new Uri($"pack://application:,,,/images/imgChateau{i + 1}.gif"));
@@ -325,127 +290,51 @@ namespace Jeu_ChateauAmbulant
             label_timer_froid.Visibility = Visibility.Hidden;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            AfficheMenuPause();
-        }
-
-        public void AfficheMenuPause()
+        // --- Gestion des événements de l'interface utilisateur (Clics boutons) ---
+        private void ButPause_Click(object sender, RoutedEventArgs e)
         {
             WindowMenu_Pause fenetre = new WindowMenu_Pause(this);
-            fenetre = new WindowMenu_Pause(this);
-            // associe l'écran au conteneur
             fenetre.Show();
             minuterie.Stop();
         }
 
-        public void AfficherJeu()
-        {
-            WindowJeu fenetre = new WindowJeu();
-            fenetre.Show();
-            this.Close();
-        }
-
-        private void ButPause_Click(object sender, RoutedEventArgs e)
-        {
-            AfficheMenuPause();
-        }
-
-        private void bouton_temperature_Click(object sender, RoutedEventArgs e)
-        {
-            Window_alimentation fenetre = new Window_alimentation();
-            fenetre.Show();
-
-        }
+        private void bouton_temperature_Click(object sender, RoutedEventArgs e) => new Window_alimentation().Show();
+        private void bouton_reparation_Click(object sender, RoutedEventArgs e) => new Window_reparer_bombe().Show();
+        private void bouton_bouclier_Click(object sender, RoutedEventArgs e) => new Window_sort_protection().Show();
 
         private void bouton_rejouer_Click(object sender, RoutedEventArgs e)
         {
-
-			Window1Selection fenetre = new Window1Selection();
-			fenetre.Show();
-			this.Close();
-
-		}
-
-        private void bouton_reparation_Click(object sender, RoutedEventArgs e)
-        {
-            Window_reparer_bombe fenetre = new Window_reparer_bombe();
-            fenetre.Show();
-        }
-
-        private void bouton_bouclier_Click(object sender, RoutedEventArgs e)
-        {
-            Window_sort_protection fenetre = new Window_sort_protection();
-            fenetre.Show(); 
+            new Window1Selection().Show();
+            this.Close();
         }
 
         private void bouton_eteindre_Click(object sender, RoutedEventArgs e)
         {
             casse = false;
-            Window_alimentation.nombre_buches = 1;
-            bouton_eteindre.Visibility = Visibility.Visible;
+            Window_alimentation.nombre_buches = 1; // Réinitialise à un état stable
             minuterie.Start();
             chronoJeu.Start();
         }
 
-		private void Arreter()
-		{
-			// Arrêt des Timers
-			minuterie?.Stop();
-			minuterieEnemi?.Stop();
-			minuterieTimer?.Stop();
+        /// <summary>
+        /// Nettoie tous les abonnements et stoppe les processus pour éviter les fuites mémoire.
+        /// </summary>
+        private void Arreter()
+        {
+            minuterie?.Stop();
+            minuterieEnemi?.Stop();
+            minuterieTimer?.Stop();
+            chronoTotal?.Stop();
+            chronoFeu?.Stop();
+            chronoJeu?.Stop();
 
-			// Arrêt des Stopwatch
-			chronoTotal?.Stop();
-			chronoFeu?.Stop();
-			chronoJeu?.Stop();
+            minuterie.Tick -= Jeu;
+            minuterieEnemi.Tick -= Corbeau;
+            minuterieEnemi.Tick -= Avion;
+            minuterieTimer.Tick -= MAJTimer;
 
-			// DÉSABONNEMENT (Crucial pour éviter les freezes au prochain lancement)
-			minuterie.Tick -= Jeu;
-			minuterieEnemi.Tick -= Corbeau;
-			minuterieEnemi.Tick -= Avion;
-			minuterieTimer.Tick -= MAJTimer;
-
-			// Réinitialisation des variables statiques si nécessaire
-			chateauDetruit = false;
-			bouclierActif = false;
-		}
-
-
-		////private void MenuItem_Click(object sender, RoutedEventArgs e)
-		//{
-		//    minuterie.Stop();
-		//    ParametreWindow parametreWindow = new ParametreWindow();
-		//    bool? rep = parametreWindow.ShowDialog();
-		//    if (rep == true)
-		//    {
-		//        minuterie.Start();
-		//        double vitesse = parametreWindow.slidVitesse.Value;
-		//        if (vitesse == 2)
-		//        {
-		//            pasFond = 2;
-		//            if (nb == chateaux.Length * 4)
-		//                nb = 0;
-		//            if (nb % 4 == 0)
-		//                chateau1.Source = chateaux[nb / 4];
-
-		//        }
-		//        else if (vitesse == 1)
-		//        {
-		//            pasFond = 1;
-		//            if (nb == chateaux.Length * 8)
-		//                nb = 0;
-		//            if (nb % 8 == 0)
-		//                chateau1.Source = chateaux[nb / 8];
-		//        }
-		//        if (vitesse == 3)
-		//        {
-		//            pasFond = 4;
-		//            if (nb == chateaux.Length * 2)
-		//                nb = 0;
-		//            if (nb % 2 == 0)
-		//                chateau1.Source = chateaux[nb / 2];
-		//        }
-	}
+            chateauDetruit = false;
+            bouclierActif = false;
+        }
+    }
 }
-

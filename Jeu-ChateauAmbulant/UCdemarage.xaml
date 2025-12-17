@@ -37,11 +37,10 @@
                 <ImageBrush ImageSource="images/TexteJeu.png"/>
 			</Label.Background>
 		</Label>
-		<Label Content="" Canvas.Left="531" Canvas.Top="50" Height="215" Width="538" HorizontalAlignment="Left" VerticalAlignment="Top">
-			<Label.Background>
+        <Label Content="" Canvas.Left="531" Canvas.Top="50" Height="215" Width="538" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Label.Background>
                 <ImageBrush ImageSource="images/TexteMenu.png"/>
-			</Label.Background>
-		</Label>
-
-	</Canvas>
+            </Label.Background>
+        </Label>
+    </Canvas>
 </UserControl>

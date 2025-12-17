@@ -24,14 +24,14 @@ namespace Jeu_ChateauAmbulant
 
 		public double VolumeValue
 		{
-			get { return sliderSon.Value; }
+			get { return sliderSon.Value; }// non fonctionel 
 		}
 		public UCParam()
         {
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)// fermer le  jeu
         {
             Application.Current.Shutdown();
         }

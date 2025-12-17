@@ -24,20 +24,18 @@ namespace Jeu_ChateauAmbulant
             InitializeComponent();
         }
 
-		private async void butBouclier_Click(object sender, RoutedEventArgs e)
+		private async void butBouclier_Click(object sender, RoutedEventArgs e) // donne un bouclier apres 3 secondes d'attente pendant 20secondes 
 		{
-			
-
 			butBouclier.Content = "3secondes";
 			butBouclier.IsEnabled = false;
 			await Task.Delay(3000);
-			WindowJeu.bouclierActif = true;
-			butBouclier.Content = "Bouclier actif pendant 2secondes";
-			await Task.Delay(20000);
+			WindowJeu.bouclierActif = true;//définir que le bouclier éxiste
+			butBouclier.Content = "Bouclier actif pendant 20 secondes";
+			await Task.Delay(20000); //20secondes d'attente
 
-			WindowJeu.bouclierActif = false;
+			WindowJeu.bouclierActif = false; //fin du bouclier
 
-			this.Close(); 
+			this.Close(); //fermeture fenetre
 		}
 	}
 }

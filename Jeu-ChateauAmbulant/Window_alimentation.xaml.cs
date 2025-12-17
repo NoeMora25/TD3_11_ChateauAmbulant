@@ -65,15 +65,15 @@ namespace Jeu_ChateauAmbulant
 
         private void Bouton_Retour_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Close(); // fermeture si le bouton est cliqué
         }
 
 
 
         public static void Verif_alimentation(object? sender = null, EventArgs e = null)
         {
-            // Sécurité : si la fenêtre n'est pas ouverte, on ne fait rien pour éviter les bugs
-            if (Instance == null) return;
+            
+            if (Instance == null) return; //si ce n'est pas ouvert on lance rien pour éviter les problèmes
 
             if (Window_alimentation.nombre_buches < 1)
             {
@@ -83,9 +83,7 @@ namespace Jeu_ChateauAmbulant
             }
             else if (Window_alimentation.nombre_buches > 5)
             {
-                //WindowJeu.minuterie.Stop();
-                // 3. On change le fond pour le feu incontrôlable
-                // Assurez-vous d'avoir une image avec ce nom ou changez le nom ici
+                //feu brûlé
                 Instance.Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/images/image_cheminee_brule_fond.png")));
             }
             else

@@ -40,12 +40,8 @@ namespace Jeu_ChateauAmbulant
 			WindowJeu.minuterieEnemi.Stop();
 			WindowJeu.minuterieTimer.Stop();
 
-			// 2. IMPORTANT : Désabonner les fonctions (Nettoyage des références)
-			// Cela évite que le code du jeu continue de s'exécuter sur une fenêtre fermée
-			// Note : Il faut s'assurer que ces événements sont accessibles ou gérés via WindowJeu
-
 			Window1Selection uc = new Window1Selection();
-			uc.Show();
+			uc.Show(); // afficher la nouvelle fenetre
 
 			// 3. Fermer les fenêtres
 			_fenetreJeu.Close();

@@ -73,7 +73,6 @@
     <None Remove="images\Règles du jeu.png" />
     <None Remove="images\TexteJeu.png" />
     <None Remove="images\TexteMenu.png" />
-    <None Remove="images\texteRegles.png" />
     <None Remove="images\texteSlider.png" />
     <None Remove="images\thermometre_2.png" />
     <None Remove="images\thermometre_3.png" />
@@ -235,9 +234,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="images\TexteMenu.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="images\texteRegles.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="images\texteSlider.png">
