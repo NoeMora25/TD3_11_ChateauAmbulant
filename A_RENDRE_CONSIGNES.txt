@@ -1,0 +1,6 @@
+Un répertoire: NUM_GROUPE_NOM1_NOM2.
+Exemple: 1_DOUDOUH_KALIAKOUDAS
+
+Avec :
+  - ReglesJeuListing-Noms.docx
+  - TableauBord-Noms.docx

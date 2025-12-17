@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="Jeu_ChateauAmbulant.UCconsignes"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Jeu_ChateauAmbulant"
+             mc:Ignorable="d" Height="900" Width="1600">
+	<Canvas>
+		<Image Height="996" Canvas.Left="408" Source="/images/Règles du jeu.png" Stretch="Fill" Canvas.Top="-48" Width="784" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+		<Image Height="710" Canvas.Left="530" Source="/images/texteRegles.png" Stretch="Fill" Canvas.Top="95" Width="540" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+		<Button x:Name="butRetour" Content="" Canvas.Left="44" Canvas.Top="44" HorizontalAlignment="Left" VerticalAlignment="Top" Width="314" Height="170">
+			<Button.Background>
+				<ImageBrush ImageSource="/butRetour.png"/>
+			</Button.Background>
+		</Button>
+
+	</Canvas>
+</UserControl>

@@ -1,0 +1,23 @@
+﻿<Window x:Name="Zone_alimentation" x:Class="Jeu_ChateauAmbulant.Window_alimentation"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Jeu_ChateauAmbulant"
+        mc:Ignorable="d"
+        Title="Window_alimentation" Height="650" Width="460" >
+    <Window.Background>
+        <ImageBrush x:Name="image_fond_cheminee" ImageSource="/images/image_cheminee_fond.png"/>
+    </Window.Background>
+    <Grid>
+
+        <Button x:Name="bouton_nourrir" Content="" HorizontalAlignment="Center" Margin="0,124,0,0" VerticalAlignment="Top" Height="69" Width="194" Click="bouton_nourrir_Click">
+            <Button.Background>
+                <ImageBrush ImageSource="/images/bouton_nourrir.png"/>
+            </Button.Background>
+        </Button>
+        <Button x:Name="Bouton_Retour" Content="(--" HorizontalAlignment="Left" Margin="28,34,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.262,-0.198" Height="47" Width="64" Click="Bouton_Retour_Click"/>
+        <Label x:Name="label_DureeAlimentation" Content="" HorizontalAlignment="Left" Margin="181,209,0,0" VerticalAlignment="Top" Height="55" Width="160" FontSize="14" Foreground="#FFFFF2F2"/>
+
+    </Grid>
+</Window>

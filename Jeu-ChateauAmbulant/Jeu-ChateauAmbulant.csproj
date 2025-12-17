@@ -1,0 +1,292 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>Jeu_ChateauAmbulant</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Bruits\**" />
+    <EmbeddedResource Remove="Bruits\**" />
+    <None Remove="Bruits\**" />
+    <Page Remove="Bruits\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="background.SELECT.png" />
+    <None Remove="Background1page.png" />
+    <None Remove="bouton_jouer.png" />
+    <None Remove="butRetour.png" />
+    <None Remove="Gemini_Generated_Image_4c8qsm4c8qsm4c8q.png" />
+    <None Remove="images\avion.png" />
+    <None Remove="images\background.SELECT.png" />
+    <None Remove="images\Background1page.png" />
+    <None Remove="images\background_casse_bombe.png" />
+    <None Remove="images\bombe.png" />
+    <None Remove="images\bouton_eteindre.png" />
+    <None Remove="images\bouton_jouer.png" />
+    <None Remove="images\bouton_nourrir.png" />
+    <None Remove="images\bouton_pause.png" />
+    <None Remove="images\bouton_quitter.png" />
+    <None Remove="images\bouton_rejouer.png" />
+    <None Remove="images\bouton_reparation.png" />
+    <None Remove="images\bouton_reparer.png" />
+    <None Remove="images\bouton_reprendre.png" />
+    <None Remove="images\bouton_sort_protection.png" />
+    <None Remove="images\bouton_température.png" />
+    <None Remove="images\butNiv1.png" />
+    <None Remove="images\butNiv2.png" />
+    <None Remove="images\butNiv3.png" />
+    <None Remove="images\butRegles.png" />
+    <None Remove="images\butRetour.png" />
+    <None Remove="images\but_play.webp" />
+    <None Remove="images\corbeau.png" />
+    <None Remove="images\Gemini_Generated_Image_4c8qsm4c8qsm4c8q.png" />
+    <None Remove="images\image_bouclier.png" />
+    <None Remove="images\image_cheminee_brule_fond.png" />
+    <None Remove="images\image_cheminee_eteinte_fond.png" />
+    <None Remove="images\image_cheminee_fond.png" />
+    <None Remove="images\image_fin_gagne.png" />
+    <None Remove="images\image_fin_perd.png" />
+    <None Remove="images\image_Fond.png" />
+    <None Remove="images\image_Fond.webp" />
+    <None Remove="images\image_protection_fond.png" />
+    <None Remove="images\imgChateau1.gif" />
+    <None Remove="images\imgChateau2.gif" />
+    <None Remove="images\imgChateau3.gif" />
+    <None Remove="images\imgChateau4.gif" />
+    <None Remove="images\imgChateau5.gif" />
+    <None Remove="images\imgChateau6.gif" />
+    <None Remove="images\imgChateau7.gif" />
+    <None Remove="images\imgChateau8.gif" />
+    <None Remove="images\imgChateau9.gif" />
+    <None Remove="images\imgChateau_Enflamme.png" />
+    <None Remove="images\imgChateau_glace.png" />
+    <None Remove="images\label_pause.png" />
+    <None Remove="images\logo_parametre.png" />
+    <None Remove="images\maisonCassee.png" />
+    <None Remove="images\navet-chateau.jpg" />
+    <None Remove="images\Règles du jeu.png" />
+    <None Remove="images\TexteJeu.png" />
+    <None Remove="images\TexteMenu.png" />
+    <None Remove="images\texteRegles.png" />
+    <None Remove="images\texteSlider.png" />
+    <None Remove="images\thermometre_2.png" />
+    <None Remove="images\thermometre_3.png" />
+    <None Remove="images\thermometre_4.png" />
+    <None Remove="images\thermometre_5.png" />
+    <None Remove="images\thermometre_brulant.png" />
+    <None Remove="images\thermometre_froid.png" />
+    <None Remove="logo_parametre.png" />
+    <None Remove="sons\armed.wav" />
+    <None Remove="wp6592846.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="background.SELECT.png" />
+    <Resource Include="butRetour.png" />
+    <Resource Include="Gemini_Generated_Image_4c8qsm4c8qsm4c8q.png" />
+    <Resource Include="images\avion.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\background.SELECT.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\Background1page.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\background_casse_bombe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bombe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_eteindre.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_jouer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_nourrir.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_pause.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_quitter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_rejouer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_reparation.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_reparer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_reprendre.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_sort_protection.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\bouton_température.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\butNiv1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\butNiv2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\butNiv3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\butRegles.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\butRetour.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\but_play.webp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\corbeau.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\Gemini_Generated_Image_4c8qsm4c8qsm4c8q.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\image_bouclier.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\image_cheminee_brule_fond.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\image_cheminee_eteinte_fond.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\image_cheminee_fond.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\image_fin_gagne.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\image_fin_perd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\image_Fond.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\image_protection_fond.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau1.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau2.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau3.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau4.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau5.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau6.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau7.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau8.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau9.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau_Enflamme.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\imgChateau_glace.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\label_pause.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\logo_parametre.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\maisonCassee.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\Règles du jeu.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\TexteJeu.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\TexteMenu.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\texteRegles.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\texteSlider.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\thermometre_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\thermometre_2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\thermometre_3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\thermometre_4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\thermometre_5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\thermometre_brulant.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\thermometre_froid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="logo_parametre.png" />
+    <Resource Include="wp6592846.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="sons\armed.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

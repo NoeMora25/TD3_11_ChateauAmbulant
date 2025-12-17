@@ -1,0 +1,21 @@
+﻿<Window x:Class="Jeu_ChateauAmbulant.Window_sort_protection"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Jeu_ChateauAmbulant"
+        mc:Ignorable="d"
+        Title="Window_sort_protection" Height="450" Width="800">
+    <Window.Background>
+        <ImageBrush ImageSource="/images/image_protection_fond.png"/>
+    </Window.Background>
+    <Grid>
+        <Button x:Name="butBouclier" Content="" HorizontalAlignment="Left" Margin="36,0,0,0" VerticalAlignment="Center" Height="113" Width="314" Click="butBouclier_Click">
+            <Button.Background>
+                <ImageBrush ImageSource="/images/bouton_sort_protection.png"/>
+            </Button.Background>
+        </Button>
+        <Label Content="Ici vous pouvez protéger le château &#x0a; contre les attaques des corbeaux &#x0a; (Attention à bien le protéger avant &#x0a; q'un corbeau n'arrive) " HorizontalAlignment="Left" Margin="410,24,0,0" VerticalAlignment="Top" Height="129" Width="390" Foreground="White" FontSize="22"/>
+
+    </Grid>
+</Window>

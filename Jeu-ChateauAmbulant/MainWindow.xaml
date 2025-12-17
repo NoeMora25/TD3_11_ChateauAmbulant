@@ -1,0 +1,23 @@
+﻿<Window x:Class="Jeu_ChateauAmbulant.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Jeu_ChateauAmbulant"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="900" Width="1600">
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="images/Background1page.png"/>
+        </Grid.Background>
+        <Button Content="" HorizontalAlignment="Left" Margin="200,0,0,0" VerticalAlignment="Center" Height="165" Width="404" Click="OuvrirFenetre_Click">
+            <Button.Background>
+                <ImageBrush ImageSource="images/bouton_jouer.png"/>
+            </Button.Background>
+        </Button>
+        <MediaElement x:Name="MusicAmbiance" 
+                      Source="bruits/Armed.mp3" 
+                      LoadedBehavior="Manual" 
+                      Visibility="Collapsed"/>
+    </Grid>
+</Window>
